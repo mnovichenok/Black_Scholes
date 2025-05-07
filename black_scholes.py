@@ -3,6 +3,7 @@ from scipy.stats import norm
 import yfinance as yf
 from datetime import datetime
 from datetime import date
+from fastapi import HTTPException
 
 
 class MarketDataFetcher:
@@ -14,6 +15,8 @@ class MarketDataFetcher:
 
     def stock_price(self):
         stock = yf.Ticker(self.ticker)
+        if stock.history(period="1d").empty:
+            raise HTTPException(status_code=400, detail = "Invalid or unknown stock ticker.")
         price = round(stock.history(period="1d", interval="1m")["Close"][-1], 2) #most recently closed stock price, rounded to 2 decimals
         return price
 
@@ -21,6 +24,8 @@ class MarketDataFetcher:
         today = date.today()
         expiry_date = datetime.strptime(self.expiry, "%Y-%m-%d").date()
         delta_days = (expiry_date - today).days
+        if delta_days<0:
+            raise HTTPException(status_code=400, detail = "Expiration date cannot be in the past.")
         return delta_days/365.0
 
     def historical_volatility(self, window=30):
@@ -30,9 +35,13 @@ class MarketDataFetcher:
         log_returns = np.log(history["Close"]/history["Close"].shift(1))
         return np.std(log_returns.dropna()) * np.sqrt(252)
 
+    def stock_name(self):
+         return yf.Ticker(self.ticker).info['longName']
+        
 
 
 class BlackScholes:
+    
     def __init__(self, S, K, T, sigma, r, option_type):
         self.S = S
         self.K = K

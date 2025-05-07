@@ -18,6 +18,7 @@ def get_option(option: Option):
     S = fetcher.stock_price()
     T = fetcher.time_to_maturity()
     sigma = fetcher.historical_volatility()
+    name = fetcher.stock_name()
 
     model = BlackScholes( S, option.K, T, sigma, option.r, option.option_type)
     if option.option_type == 'Call':
@@ -25,5 +26,5 @@ def get_option(option: Option):
     else:
         price = model.put()
     
-    return {"price": price, "S": S, "T": T, "sigma": sigma}
+    return {"price": price, "S": S, "T": T, "sigma": sigma, "name": name}
 
