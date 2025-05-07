@@ -26,7 +26,7 @@ class MarketDataFetcher:
     def historical_volatility(self, window=30):
         #annulized volatility = standard deviation * √(252)
         stock = yf.Ticker(self.ticker)
-        history = stock.history(period=f"{window}d")
+        history = stock.history(f"{window}d")
         log_returns = np.log(history["Close"]/history["Close"].shift(1))
         return np.std(log_returns.dropna()) * np.sqrt(252)
 
