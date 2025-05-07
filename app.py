@@ -1,9 +1,8 @@
 import streamlit as st
-from black_scholes import MarketDataFetcher, BlackScholes
-from datetime import datetime
+import requests
 
-st.title("Black-Scholes Option Pricing Tool")
 
+st.title("Black-Scholes Option Pricer")
 
 #user inputs
 ticker = st.text_input("Stock Ticker")
@@ -12,28 +11,32 @@ expiry = st.text_input("Expiration Date (YYYY-MM-DD)")
 option_type = st.selectbox("Option Type", ["Call", "Put"])
 r = st.slider("Risk-Free Rate", 0.0, 0.1)
 
-
-#calculate option price
 if st.button("Calculate Option Price"):
-    fetcher = MarketDataFetcher(ticker, expiry, K)
-    S = fetcher.stock_price()
-    T = fetcher.time_to_maturity()
-    sigma = fetcher.historical_volatility()
+    user_option = {
+        "ticker": ticker,
+        "K": K,
+        "expiry": expiry,
+        "option_type": option_type,
+        "r": r
+    }
 
-    option = BlackScholes( S, K, T, sigma, r, option_type)
-    if option_type == 'Call':
-        price = option.call()
+    result = requests.post("http://localhost:8000/option/", json=user_option)
+
+    if result.status_code == 200:
+        price = result.json()["price"]
+        S = result.json()["S"]
+        T = result.json()["T"]
+        sigma = result.json()["sigma"]
+        
+        st.success(f"{option_type} option price: ${price:.2f}")
+        st.markdown(f"""
+            **Inputs:**
+            - Current Price (S): ${S:.2f}  
+            - Strike Price (K): ${K}  
+            - Time to Expiry (T): {T:.4f} years  
+            - Volatility (σ): {sigma:.2%}  
+            - Risk-Free Rate (r): {r:.2%}  
+        """)
     else:
-        price = option.put()
+        st.error(f"Error from API: {result.status_code} — {result.text}")
 
-    st.success(f"{option_type} option price: ${price:.2f}")
-    st.markdown(f"""
-        **Inputs:**
-        
-        - Current Price (S): ${S:.2f}  
-        
-        - Strike Price (K): ${K}  
-        - Time to Expiry (T): {T:.4f} years  
-        - Volatility (σ): {sigma:.2%}  
-        - Risk-Free Rate (r): {r:.2%}  
-    """)
