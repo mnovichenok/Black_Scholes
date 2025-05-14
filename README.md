@@ -1,63 +1,50 @@
 # Black-Scholes Option Pricing Model
-This project implements a **Black-Scholes option pricing model** using the **FastAPI** framework for backend processing and the **requests** library for client-side interaction. It supports real-time option pricing using live stock data via `yfinance`.
+This project implements a **Black-Scholes option pricing model** using the **FastAPI** framework for backend processing and the **requests** library for client-side interaction. It supports real-time option pricing using live stock data via **yfinance**.
 
-##Features
-- Compute prices for European **call** and **put** options
-- Use **real-time stock data** from Yahoo Finance via `yfinance`
-- Estimate **historical volatility** using the standard deviation of log returns
-- Validate inputs (e.g., ticker, expiration date)
+## Features
+- Computes prices for European **call** and **put** options
+- Uses **real-time stock data** from Yahoo Finance via yfinance
+- Estimates **historical volatility** using the standard deviation of log returns
+- Validates inputs (e.g., ticker, expiration date)
 - REST API via FastAPI
 - Interactive frontend using Streamlit
 
-## 🧮 How Volatility Is Calculated
 
-Volatility \( \sigma \) is calculated from the past 30 days of historical closing prices using the formula:
+## Annualized Volatility Calculation
 
-\[
-\sigma = \text{std}(\log(P_t / P_{t-1})) \times \sqrt{252}
-\]
+Annualized volatility (σ) (standard deviation of returns)  is calculated from the past 30 days of historical closing prices using the formula:
+
+### σ = stdev(ln(P<sub>t</sub> / P<sub>t-1</sub>)) × √(252)
 
 Where:
-- \( P_t \): closing price at day \( t \)
-- \( \log(P_t / P_{t-1}) \): daily **log return**
-- \( 252 \): trading days per year
+- P<sub>t</sub> : closing price at day t
+- log(P<sub>t</sub> / P<sub>t-1</sub>) : daily **log return**
+- 252 : trading days per year
 
----
 
-##Black-Scholes Formula
+
+## Black-Scholes Formula
 
 The price of a European call or put option is computed using:
 
-###Call Option:
-\[
-C = S \cdot N(d_1) - K \cdot e^{-rT} \cdot N(d_2)
-\]
-
-###Put Option:
-\[
-P = K \cdot e^{-rT} \cdot N(-d_2) - S \cdot N(-d_1)
-\]
+![image](https://github.com/user-attachments/assets/1cb5de3f-d78b-44d9-82e2-5d47544bbde8)
 
 Where:
+- C, P : Call and put option prices
+- S<sub>0</sub> : Current stock price
+- K : Strike price
+- T : Time to expiration (in years)
+- r : Risk-free interest rate
+- σ : Annualized volatility of the underlying stock
+- N : Cumulative distribution function (CDF) of the standard normal distribution 
 
-| Symbol | Meaning |
-|--------|---------|
-| \( C, P \) | Call and put option prices |
-| \( S \) | Current stock price |
-| \( K \) | Strike price |
-| \( T \) | Time to expiration (in years) |
-| \( r \) | Risk-free interest rate |
-| \( \sigma \) | Annualized volatility of the underlying stock |
-| \( N(\cdot) \) | Cumulative distribution function (CDF) of the standard normal distribution |
-| \( d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)T}{\sigma \sqrt{T}} \) |
-| \( d_2 = d_1 - \sigma \sqrt{T} \) |
-
----
-
-##Black-Scholes Assumptions
+## Assumptions
 - The stock price follows a **geometric Brownian motion** with constant volatility and drift
 - No dividends are paid during the option’s life
 - Markets are **frictionless**: no transaction costs or taxes
 - The risk-free interest rate is constant
 - Options are **European-style** (only exercisable at expiration)
 - No arbitrage opportunities exist
+
+
+### - Maya Novichenok
