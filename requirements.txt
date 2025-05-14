@@ -1,0 +1,11 @@
+numpy
+scipy
+yfinance
+datetime
+
+fastapi
+uvicorn
+pydantic
+
+requests
+

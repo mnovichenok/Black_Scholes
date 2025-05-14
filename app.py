@@ -20,7 +20,7 @@ if st.button("Calculate Option Price"):
         "r": r
     }
 
-    result = requests.post("http://localhost:8000/option/", json=user_option)
+    result = requests.post("http://logic:8000/option/", json=user_option)
 
     if result.status_code == 200:
         price = result.json()["price"]
