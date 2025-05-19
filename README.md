@@ -47,4 +47,39 @@ Where:
 - No arbitrage opportunities exist
 
 
+## Installation & Running the Project
+###  Prerequisites
+
+- [Podman](https://podman.io/) installed and configured
+- Podman machine (for macOS users):
+```bash
+podman machine init && podman machine start
+```
+
+#### 1. Clone the repository
+
+```bash
+git clone https://github.com/mnovichenok/Black_Scholes.git
+cd Black_Scholes
+```
+
+#### 2. Create a shared network and build the containers
+
+```bash
+podman network create black-scholes-net
+podman build -f Containerfile -t black-scholes-api .
+podman build -f Containerfile.ui -t black-scholes-ui .
+```
+
+#### 3. Run the Containers
+
+```bash
+podman run -d --rm --name logic --network black-scholes-net black-scholes-api
+podman run -d --rm --name ui --network black-scholes-net -p 8501:8501 black-scholes-ui
+```
+
+#### 4. Access the App
+
+http://localhost:8501
+
 ### - Maya Novichenok
